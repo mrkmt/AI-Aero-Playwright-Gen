@@ -33,3 +33,13 @@ Thumbs.db
 backend/usage_stats.json
 logs/
 *.log
+
+# Security & Personal Data
+backend/agent_profiles.json
+tests_web/
+backend/test_plans/
+backend/verify_agents.py
+backend/storage/
+node_modules_corrupted_backup/
+
+

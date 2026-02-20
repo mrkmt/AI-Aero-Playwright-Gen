@@ -1,6 +1,6 @@
 from typing import List, Dict, Any
-from templates import QA_TEMPLATES
-from hybrid_pipeline import pipeline
+from core.templates import QA_TEMPLATES
+from core.hybrid_pipeline import pipeline
 
 class ISTQBGenerator:
     def __init__(self):

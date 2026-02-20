@@ -1,0 +1,21 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.9, pytest-7.4.3, pluggy-1.6.0 -- C:\Users\kaung myat thu\AppData\Local\Programs\Python\Python311\python.exe
+cachedir: .pytest_cache
+rootdir: d:\KMT\My class\AI\AI-Aero-Playwright-Gen
+plugins: anyio-4.10.0, cov-7.0.0
+collecting ... collected 1 item
+
+..\tests_web\test_fixed.py::test_globalhr_login_logout ERROR             [100%]
+
+=================================== ERRORS ====================================
+________________ ERROR at setup of test_globalhr_login_logout _________________
+file d:\KMT\My class\AI\AI-Aero-Playwright-Gen\tests_web\test_fixed.py, line 76
+  def test_globalhr_login_logout(page: Page):
+E       fixture 'page' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, cov, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, no_cover, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+d:\KMT\My class\AI\AI-Aero-Playwright-Gen\tests_web\test_fixed.py:76
+=========================== short test summary info ===========================
+ERROR ..\tests_web\test_fixed.py::test_globalhr_login_logout
+============================== 1 error in 0.25s ===============================

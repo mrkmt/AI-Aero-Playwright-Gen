@@ -1,5 +1,5 @@
-from agentic_service import VisualInspectorTool
-from hybrid_pipeline import pipeline
+from .agentic_service import VisualInspectorTool
+from core.hybrid_pipeline import pipeline
 from typing import Optional
 
 class SelfHealer:

@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from typing import List, Optional
 import os
 import asyncio
-from burmese_engine import PlaywrightRunner
+from services.burmese_engine import PlaywrightRunner
 
 router = APIRouter(prefix="/api/v1/burmese", tags=["burmese"])
 

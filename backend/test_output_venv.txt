@@ -1,0 +1,62 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.9, pytest-9.0.2, pluggy-1.6.0 -- D:\KMT\My class\AI\AI-Aero-Playwright-Gen\backend\venv\Scripts\python.exe
+cachedir: .pytest_cache
+metadata: {'Python': '3.11.9', 'Platform': 'Windows-10-10.0.26100-SP0', 'Packages': {'pytest': '9.0.2', 'pluggy': '1.6.0'}, 'Plugins': {'anyio': '4.12.1', 'base-url': '2.1.0', 'html': '4.2.0', 'metadata': '3.1.1', 'playwright': '0.7.2'}, 'Base URL': ''}
+rootdir: d:\KMT\My class\AI\AI-Aero-Playwright-Gen
+plugins: anyio-4.12.1, base-url-2.1.0, html-4.2.0, metadata-3.1.1, playwright-0.7.2
+collecting ... collected 1 item
+
+..\tests_web\test_fixed.py::test_globalhr_login_logout[chromium] FAILED  [100%]
+
+================================== FAILURES ===================================
+____________________ test_globalhr_login_logout[chromium] _____________________
+
+page = <Page url='https://test.globalhr.com.mm/ook#/login'>
+
+    def test_globalhr_login_logout(page: Page):
+        """
+        TC001: Verify successful login and logout flow.
+        Objective: Verify the end-to-end authentication flow and user profile menu interaction.
+        """
+        # Set default timeout for all page actions to align with configuration
+        page.set_default_timeout(TIMEOUT)
+    
+        # Initialize Page Objects
+        login_page = LoginPage(page)
+        home_page = HomePage(page)
+    
+        # Step 1: Navigate to the login URL
+        login_page.goto()
+    
+        # Steps 2-6: Perform Login
+        # Fills ID, Username, Password and clicks login
+        login_page.login(
+            CREDENTIALS["ID_NUMBER"],
+            CREDENTIALS["USERNAME"],
+            CREDENTIALS["PASSWORD"]
+        )
+    
+        # Verify Transition to HomePage
+        # Ensures login was successful before proceeding
+>       home_page.verify_load()
+
+..\tests_web\test_fixed.py:103: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <test_fixed.HomePage object at 0x00000202D1D86650>
+
+    def verify_load(self):
+        """Verify that the home page/dashboard has loaded successfully."""
+        # Wait for the user profile dropdown to be visible as a sign of successful login
+>       expect(self.user_profile_dropdown).to_be_visible(timeout=TIMEOUT)
+E       AssertionError: Locator expected to be visible
+E       Actual value: None
+E       Error: element(s) not found 
+E       Call log:
+E         - Expect "to_be_visible" with timeout 30000ms
+E         - waiting for locator("li.nav-item.user-profile a.dropdown-toggle")
+
+..\tests_web\test_fixed.py:62: AssertionError
+=========================== short test summary info ===========================
+FAILED ..\tests_web\test_fixed.py::test_globalhr_login_logout[chromium] - Ass...
+============================= 1 failed in 35.04s ==============================

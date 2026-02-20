@@ -14,6 +14,7 @@ class RecorderHandle:
     session_id: str
     base_url: str
     app_profile: str = "default"
+    headless: bool = False
     stop_event: threading.Event = field(default_factory=threading.Event)
     steps: list[dict] = field(default_factory=list)
     error: str | None = None
@@ -22,6 +23,7 @@ class RecorderHandle:
 
 
 _RECORDER_HANDLES: dict[str, RecorderHandle] = {}
+_FINISHED_SESSIONS: dict[str, dict] = {} # Cache for finished session results
 _RECORDER_LOCK = threading.Lock()
 
 
@@ -111,7 +113,7 @@ def _recording_worker(handle: RecorderHandle) -> None:
 
     try:
         with sync_playwright() as pw:
-            browser = pw.chromium.launch(headless=False)
+            browser = pw.chromium.launch(headless=handle.headless)
             context = browser.new_context()
             page = context.new_page()
 
@@ -181,10 +183,10 @@ def _build_steps(base_url: str, events: list[dict]) -> list[dict]:
     return steps
 
 
-def start_recording(app_profile: str, base_url: str) -> dict:
+def start_recording(app_profile: str, base_url: str, headless: bool = False) -> dict:
     session_id = str(uuid.uuid4())
 
-    handle = RecorderHandle(session_id=session_id, base_url=base_url, app_profile=app_profile)
+    handle = RecorderHandle(session_id=session_id, base_url=base_url, app_profile=app_profile, headless=headless)
 
     # Start Playwright recording thread (skipped during tests)
     if "PYTEST_CURRENT_TEST" not in os.environ:
@@ -212,16 +214,31 @@ def stop_recording(session_id: str) -> dict | None:
 
     steps = _build_steps(handle.base_url, handle.steps)
     source = "live" if not handle.error else f"live ({handle.error})"
+    result = {"session_id": session_id, "status": "stopped", "steps": steps, "source": source}
+    
+    with _RECORDER_LOCK:
+        _FINISHED_SESSIONS[session_id] = result
+        # Simple cleanup: keep only last 10 finished sessions
+        if len(_FINISHED_SESSIONS) > 10:
+            first_key = next(iter(_FINISHED_SESSIONS))
+            _FINISHED_SESSIONS.pop(first_key)
+            
+    return result
 
-    return {"session_id": session_id, "status": "stopped", "steps": steps, "source": source}
 
-
-def session_steps(session_id: str) -> list[dict]:
+def session_steps(session_id: str) -> dict:
     with _RECORDER_LOCK:
         if session_id in _RECORDER_HANDLES:
             handle = _RECORDER_HANDLES[session_id]
-            return _build_steps(handle.base_url, handle.steps)
-    return []
+            return {
+                "steps": _build_steps(handle.base_url, handle.steps),
+                "error": handle.error,
+                "status": handle.status
+            }
+        if session_id in _FINISHED_SESSIONS:
+            return _FINISHED_SESSIONS[session_id]
+            
+    return {"steps": [], "error": "Session not found"}
 
 
 def handle_extension_message(session_id: str, message: dict) -> None:

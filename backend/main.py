@@ -4,12 +4,28 @@ from fastapi.staticfiles import StaticFiles
 import os
 from pathlib import Path
 from dotenv import load_dotenv
-from burmese_router import router as burmese_router
-from recorder_router import router as recorder_router
+from api.burmese_router import router as burmese_router
+from api.recorder_router import router as recorder_router
 
 load_dotenv()
 
+# Initialize background services
+def init_services():
+    from services.telegram_bot import get_telegram_bot
+    from services.knowledge_service import get_knowledge_service
+    # This triggers singleton initialization
+    get_knowledge_service()
+    get_telegram_bot()
+
 app = FastAPI(title="AI-Aero-Playwright-Gen", version="1.0.0")
+
+@app.on_event("startup")
+async def startup_event():
+    init_services()
+    
+    # Startup Auth Check
+    from services.auth_manager import auth_manager
+    auth_manager.check_tokens()
 
 # Ensure reports directory exists
 backend_dir = Path(__file__).parent
